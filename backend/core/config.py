@@ -1,5 +1,9 @@
 # backend/core/config.py
+from pathlib import Path
+
 from pydantic_settings import BaseSettings
+
+ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
 
 
 class Settings(BaseSettings):
@@ -21,7 +25,7 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.ALLOWED_ORIGINS.split(",")]
 
     class Config:
-        env_file = ".env"
+        env_file = ENV_FILE
         extra = "ignore"
 
 
