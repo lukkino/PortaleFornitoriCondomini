@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Virtualenv
+venv/
+.venv/
+env/
+
+# Environment
+.env
+backend/.env
+frontend/.env
+
+# PyCharm
+.idea/
+
+# Build
+build/
+dist/
+*.spec
+
+# Database locale
+*.db
+*.sqlite3
+
+# Chiavi e certificati
+*.pem
+*.key
+*.p12
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+node_modules/
+
+# Log
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
