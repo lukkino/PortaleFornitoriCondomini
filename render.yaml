@@ -23,3 +23,17 @@ services:
       - key: ALLOWED_ORIGINS
         sync: false          # es. https://<il-tuo-frontend>.onrender.com
     healthCheckPath: /api/health
+
+  - type: web
+    name: portale-fornitori-condomini-frontend
+    runtime: static
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false          # es. https://portale-fornitori-condomini-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
