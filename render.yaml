@@ -21,5 +21,5 @@ services:
       - key: REFRESH_TOKEN_EXPIRE_DAYS
         value: "30"
       - key: ALLOWED_ORIGINS
-        value: http://localhost:5173
+        sync: false          # es. https://<il-tuo-frontend>.onrender.com
     healthCheckPath: /api/health
