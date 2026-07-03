@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.core.config import settings
-from backend.routers import auth
+from backend.routers import auth, condomini
 
 app = FastAPI(
     title="PortaleFornitoriCondomini API",
@@ -24,6 +24,7 @@ app.add_middleware(
 
 # ── Routers ──────────────────────────────────────────────────────────────────
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(condomini.router, prefix="/api/condomini", tags=["condomini"])
 
 
 @app.get("/api/health")

@@ -5,6 +5,7 @@ import { ThemeProvider } from "./store/themeStore";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import CondominiPage from "./pages/CondominiPage";
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -30,6 +31,7 @@ function AppRoutes() {
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <RegisterPage />} />
       <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+      <Route path="/condomini" element={<PrivateRoute><CondominiPage /></PrivateRoute>} />
       <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
     </Routes>
   );

@@ -38,6 +38,12 @@ class User(Base):
     created_at      = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
+    condomini_amministrati = relationship(
+        "Condominio", foreign_keys="Condominio.admin_id", back_populates="admin", cascade="all, delete-orphan"
+    )
+    condomini_associati = relationship(
+        "Condominio", secondary="condominio_condomino", back_populates="condomini"
+    )
 
 
 class RefreshToken(Base):

@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from backend.core.config import settings
 from backend.core.database import get_db
-from backend.models.user import User
+from backend.models.user import User, UserRole
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -60,3 +60,11 @@ def get_current_user(
     if user is None:
         raise credentials_exception
     return user
+
+
+def require_role(*roles: UserRole):
+    def dependency(current_user: User = Depends(get_current_user)) -> User:
+        if current_user.role not in roles:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Non autorizzato per questo ruolo")
+        return current_user
+    return dependency

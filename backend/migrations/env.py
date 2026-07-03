@@ -24,6 +24,7 @@ if config.config_file_name is not None:
 # per l'autogenerate.
 from backend.core.database import Base
 from backend.models import user  # noqa: F401  (registra i modelli su Base)
+from backend.models import condominio  # noqa: F401
 
 target_metadata = Base.metadata
 

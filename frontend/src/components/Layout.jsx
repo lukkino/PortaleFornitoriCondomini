@@ -15,9 +15,11 @@ import {
   X,
 } from "lucide-react";
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", Icon: LayoutDashboard, path: "/dashboard" },
 ];
+
+const CONDOMINI_NAV_ITEM = { key: "condomini", label: "Condomini", Icon: Building2, path: "/condomini" };
 
 const ROLE_LABELS = {
   admin: "Amministratore",
@@ -25,7 +27,7 @@ const ROLE_LABELS = {
   fornitore: "Fornitore",
 };
 
-function SidebarContent({ collapsed, onNavClick }) {
+function SidebarContent({ collapsed, onNavClick, navItems }) {
   const { logoutUser } = useAuth();
   const navigate = useNavigate();
 
@@ -37,7 +39,7 @@ function SidebarContent({ collapsed, onNavClick }) {
   return (
     <>
       <nav className="py-4 space-y-0.5 px-2 flex-1 overflow-y-auto">
-        {NAV_ITEMS.map(({ key, label, Icon, path }) => (
+        {navItems.map(({ key, label, Icon, path }) => (
           <NavLink
             key={key}
             to={path}
@@ -85,6 +87,11 @@ export default function Layout({ children, title }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const drawerRef = useRef(null);
 
+  const navItems = [...BASE_NAV_ITEMS];
+  if (user?.role === "admin" || user?.role === "condomino") {
+    navItems.push(CONDOMINI_NAV_ITEM);
+  }
+
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
@@ -122,7 +129,7 @@ export default function Layout({ children, title }) {
           )}
         </div>
 
-        <SidebarContent collapsed={collapsed} onNavClick={undefined} />
+        <SidebarContent collapsed={collapsed} onNavClick={undefined} navItems={navItems} />
 
         <div className="px-2 pb-3">
           <button
@@ -161,7 +168,7 @@ export default function Layout({ children, title }) {
           </button>
         </div>
 
-        <SidebarContent collapsed={false} onNavClick={() => setMobileOpen(false)} />
+        <SidebarContent collapsed={false} onNavClick={() => setMobileOpen(false)} navItems={navItems} />
       </div>
 
       <div className="flex-1 flex flex-col min-w-0">
