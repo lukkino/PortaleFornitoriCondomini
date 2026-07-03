@@ -1,7 +1,8 @@
 // frontend/src/pages/RegisterPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register, getMe } from "../api/auth";
+import { listCondominiPublic } from "../api/condomini";
 import { useAuth } from "../store/authStore";
 import { Eye, EyeOff, Building2 } from "lucide-react";
 
@@ -16,12 +17,42 @@ export default function RegisterPage() {
   const { loginUser } = useAuth();
   const navigate = useNavigate();
 
+  // Scheda anagrafica condomino
+  const [nome, setNome] = useState("");
+  const [cognome, setCognome] = useState("");
+  const [codiceFiscale, setCodiceFiscale] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [pec, setPec] = useState("");
+  const [condominioId, setCondominioId] = useState("");
+  const [condomini, setCondomini] = useState([]);
+
+  const isCondomino = role === "condomino";
+
+  useEffect(() => {
+    if (!isCondomino) return;
+    listCondominiPublic()
+      .then((res) => setCondomini(res.data))
+      .catch(() => setCondomini([]));
+  }, [isCondomino]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const res = await register(email, password, fullName, role);
+      const payload = { email, password, role };
+      if (isCondomino) {
+        payload.nome = nome;
+        payload.cognome = cognome;
+        payload.codice_fiscale = codiceFiscale;
+        payload.telefono = telefono;
+        payload.pec = pec.trim() || null;
+        payload.condominio_id = condominioId ? Number(condominioId) : null;
+      } else {
+        payload.full_name = fullName;
+      }
+
+      const res = await register(payload);
       const { access_token, refresh_token } = res.data;
       localStorage.setItem("access_token", access_token);
       const me = await getMe();
@@ -35,9 +66,10 @@ export default function RegisterPage() {
   };
 
   const inputClass = "w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition text-sm";
+  const labelClass = "block text-sm font-medium text-foreground mb-1.5";
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background py-10">
       <div className="w-full max-w-md px-8 py-10 bg-card rounded-2xl shadow-lg border border-border">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-3">
@@ -51,19 +83,7 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Nome e cognome</label>
-            <input type="text" value={fullName} onChange={e => setFullName(e.target.value)}
-              placeholder="Mario Rossi" className={inputClass} />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-              placeholder="nome@esempio.com" required className={inputClass} />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Sei</label>
+            <label className={labelClass}>Sei</label>
             <select value={role} onChange={e => setRole(e.target.value)} className={inputClass}>
               <option value="condomino">Condomino</option>
               <option value="fornitore">Fornitore</option>
@@ -72,7 +92,64 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Password</label>
+            <label className={labelClass}>Email</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+              placeholder="nome@esempio.com" required className={inputClass} />
+          </div>
+
+          {isCondomino ? (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelClass}>Nome</label>
+                  <input type="text" value={nome} onChange={e => setNome(e.target.value)}
+                    placeholder="Mario" required className={inputClass} />
+                </div>
+                <div>
+                  <label className={labelClass}>Cognome</label>
+                  <input type="text" value={cognome} onChange={e => setCognome(e.target.value)}
+                    placeholder="Rossi" required className={inputClass} />
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>Codice Fiscale</label>
+                <input type="text" value={codiceFiscale} onChange={e => setCodiceFiscale(e.target.value)}
+                  placeholder="RSSMRA80A01H501U" required className={inputClass} />
+              </div>
+
+              <div>
+                <label className={labelClass}>Telefono</label>
+                <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)}
+                  placeholder="3331234567" required className={inputClass} />
+              </div>
+
+              <div>
+                <label className={labelClass}>PEC (opzionale)</label>
+                <input type="email" value={pec} onChange={e => setPec(e.target.value)}
+                  placeholder="mario.rossi@pec.it" className={inputClass} />
+              </div>
+
+              <div>
+                <label className={labelClass}>Condominio</label>
+                <select value={condominioId} onChange={e => setCondominioId(e.target.value)} required className={inputClass}>
+                  <option value="" disabled>Seleziona il tuo condominio</option>
+                  {condomini.map((c) => (
+                    <option key={c.id} value={c.id}>{c.denominazione} — {c.indirizzo}</option>
+                  ))}
+                </select>
+              </div>
+            </>
+          ) : (
+            <div>
+              <label className={labelClass}>Nome e cognome</label>
+              <input type="text" value={fullName} onChange={e => setFullName(e.target.value)}
+                placeholder="Mario Rossi" className={inputClass} />
+            </div>
+          )}
+
+          <div>
+            <label className={labelClass}>Password</label>
             <div className="relative">
               <input type={showPassword ? "text" : "password"} value={password}
                 onChange={e => setPassword(e.target.value)}

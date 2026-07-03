@@ -38,6 +38,10 @@ def list_condomini_by_condomino(db: Session, user: User) -> list[Condominio]:
     return user.condomini_associati
 
 
+def list_condomini_public(db: Session) -> list[Condominio]:
+    return db.query(Condominio).order_by(Condominio.denominazione).all()
+
+
 def update_condominio(db: Session, condominio: Condominio, payload: CondominioUpdate) -> Condominio:
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(condominio, field, value)

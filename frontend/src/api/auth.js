@@ -1,13 +1,7 @@
 // frontend/src/api/auth.js
 import client from "./client";
 
-export const register = (email, password, fullName, role) =>
-  client.post("/api/auth/register", {
-    email,
-    password,
-    full_name: fullName,
-    role,
-  });
+export const register = (payload) => client.post("/api/auth/register", payload);
 
 // Il backend usa OAuth2PasswordRequestForm: si aspetta un body
 // application/x-www-form-urlencoded con i campi username/password.

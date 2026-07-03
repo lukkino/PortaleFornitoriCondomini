@@ -16,11 +16,20 @@ def get_user_by_email(db: Session, email: str) -> User | None:
 
 
 def create_user(db: Session, payload: UserCreate) -> User:
+    full_name = payload.full_name
+    if payload.nome and payload.cognome:
+        full_name = f"{payload.nome} {payload.cognome}"
+
     user = User(
         email=payload.email,
-        full_name=payload.full_name,
+        full_name=full_name,
         hashed_password=hash_password(payload.password),
         role=payload.role,
+        nome=payload.nome,
+        cognome=payload.cognome,
+        codice_fiscale=payload.codice_fiscale,
+        telefono=payload.telefono,
+        pec=payload.pec,
     )
     db.add(user)
     db.commit()

@@ -29,6 +29,12 @@ class User(Base):
     email           = Column(String(255), unique=True, index=True, nullable=False)
     full_name       = Column(String(150), nullable=True)
     hashed_password = Column(String(255), nullable=False)
+    # Scheda anagrafica condomino (valorizzata solo per role=condomino)
+    nome            = Column(String(100), nullable=True)
+    cognome         = Column(String(100), nullable=True)
+    codice_fiscale  = Column(String(16), nullable=True)
+    telefono        = Column(String(30), nullable=True)
+    pec             = Column(String(255), nullable=True)
     role            = Column(
         SAEnum(UserRole, name="user_role", values_callable=lambda enum_cls: [e.value for e in enum_cls]),
         nullable=False,

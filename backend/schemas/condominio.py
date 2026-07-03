@@ -51,3 +51,12 @@ class CondominioOut(CondominioBase):
 
 class MembroAddRequest(BaseModel):
     email: EmailStr
+
+
+class CondominioPublicOut(BaseModel):
+    """Vista minimale esposta senza autenticazione, per la selezione in fase di registrazione."""
+    id: int
+    denominazione: str
+    indirizzo: str
+
+    model_config = {"from_attributes": True}

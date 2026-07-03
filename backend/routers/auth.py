@@ -9,8 +9,9 @@ from sqlalchemy.orm import Session
 
 from backend.core.database import get_db
 from backend.core.security import verify_password, create_access_token, get_current_user
+from backend.crud import condominio as crud_condominio
 from backend.crud import user as crud_user
-from backend.models.user import User
+from backend.models.user import User, UserRole
 from backend.schemas.user import UserCreate, UserOut, TokenOut, RefreshRequest, AccessTokenOut
 
 router = APIRouter()
@@ -44,7 +45,16 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
     if crud_user.get_user_by_email(db, payload.email):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email già registrata")
 
+    condominio = None
+    if payload.role == UserRole.CONDOMINO:
+        condominio = crud_condominio.get_condominio(db, payload.condominio_id)
+        if not condominio:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Condominio non trovato")
+
     user = crud_user.create_user(db, payload)
+    if condominio:
+        crud_condominio.add_membro(db, condominio, user)
+
     access_token = create_access_token(user.id)
     refresh_token = crud_user.create_refresh_token(db, user.id)
 

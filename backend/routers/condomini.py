@@ -10,7 +10,13 @@ from backend.crud import condominio as crud_condominio
 from backend.crud import user as crud_user
 from backend.models.condominio import Condominio
 from backend.models.user import User, UserRole
-from backend.schemas.condominio import CondominioCreate, CondominioUpdate, CondominioOut, MembroAddRequest
+from backend.schemas.condominio import (
+    CondominioCreate,
+    CondominioUpdate,
+    CondominioOut,
+    CondominioPublicOut,
+    MembroAddRequest,
+)
 from backend.schemas.user import UserOut
 
 router = APIRouter()
@@ -32,6 +38,12 @@ def create_condominio(
     current_user: User = Depends(require_role(UserRole.ADMIN)),
 ):
     return crud_condominio.create_condominio(db, payload, current_user.id)
+
+
+@router.get("/public", response_model=list[CondominioPublicOut])
+def list_condomini_public(db: Session = Depends(get_db)):
+    """Lista non autenticata (solo denominazione/indirizzo), usata dal form di registrazione condomino."""
+    return crud_condominio.list_condomini_public(db)
 
 
 @router.get("", response_model=list[CondominioOut])
