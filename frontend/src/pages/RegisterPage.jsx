@@ -67,6 +67,7 @@ export default function RegisterPage() {
             <select value={role} onChange={e => setRole(e.target.value)} className={inputClass}>
               <option value="condomino">Condomino</option>
               <option value="fornitore">Fornitore</option>
+              <option value="admin">Amministratore di condominio</option>
             </select>
           </div>
 

@@ -12,7 +12,7 @@ from backend.core.database import Base
 
 
 class UserRole(str, enum.Enum):
-    ADMIN = "admin"
+    ADMIN = "admin"  # amministratore di condominio, non admin di sistema
     CONDOMINO = "condomino"
     FORNITORE = "fornitore"
 
@@ -20,7 +20,7 @@ class UserRole(str, enum.Enum):
 class User(Base):
     """
     Utente del portale. Il campo `role` distingue le 3 tipologie
-    (Amministratori, Condomini, Fornitori). Ogni utente vede solo
+    (Amministratori di condominio, Condomini, Fornitori). Ogni utente vede solo
     i propri dati: le tabelle future dovranno referenziare user_id.
     """
     __tablename__ = "users"
