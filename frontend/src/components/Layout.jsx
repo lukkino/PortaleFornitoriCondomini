@@ -11,6 +11,8 @@ import {
   Sun,
   Moon,
   Building2,
+  Wrench,
+  Truck,
   Menu,
   X,
 } from "lucide-react";
@@ -20,6 +22,8 @@ const BASE_NAV_ITEMS = [
 ];
 
 const CONDOMINI_NAV_ITEM = { key: "condomini", label: "Condomini", Icon: Building2, path: "/condomini" };
+const SERVIZI_NAV_ITEM = { key: "servizi", label: "Servizi", Icon: Wrench, path: "/servizi" };
+const FORNITORI_NAV_ITEM = { key: "fornitori", label: "Fornitori", Icon: Truck, path: "/fornitori" };
 
 const ROLE_LABELS = {
   admin: "Amministratore",
@@ -90,6 +94,9 @@ export default function Layout({ children, title }) {
   const navItems = [...BASE_NAV_ITEMS];
   if (user?.role === "admin" || user?.role === "condomino") {
     navItems.push(CONDOMINI_NAV_ITEM);
+  }
+  if (user?.role === "admin") {
+    navItems.push(SERVIZI_NAV_ITEM, FORNITORI_NAV_ITEM);
   }
 
   useEffect(() => {

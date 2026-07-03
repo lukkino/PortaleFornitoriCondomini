@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from backend.core.database import get_db
 from backend.core.security import verify_password, create_access_token, get_current_user
 from backend.crud import condominio as crud_condominio
+from backend.crud import servizio as crud_servizio
 from backend.crud import user as crud_user
 from backend.models.user import User, UserRole
 from backend.schemas.user import UserCreate, UserOut, TokenOut, RefreshRequest, AccessTokenOut
@@ -51,9 +52,17 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
         if not condominio:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Condominio non trovato")
 
+    servizi = []
+    if payload.role == UserRole.FORNITORE:
+        servizi = crud_servizio.get_servizi_by_ids(db, payload.servizio_ids)
+        if len(servizi) != len(set(payload.servizio_ids)):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Uno o più servizi selezionati non esistono")
+
     user = crud_user.create_user(db, payload)
     if condominio:
         crud_condominio.add_membro(db, condominio, user)
+    for servizio in servizi:
+        crud_servizio.add_fornitore(db, servizio, user)
 
     access_token = create_access_token(user.id)
     refresh_token = crud_user.create_refresh_token(db, user.id)

@@ -7,12 +7,16 @@ from sqlalchemy.orm import Session
 
 from backend.core.config import settings
 from backend.core.security import hash_password, generate_refresh_token
-from backend.models.user import User, RefreshToken
+from backend.models.user import User, RefreshToken, UserRole
 from backend.schemas.user import UserCreate
 
 
 def get_user_by_email(db: Session, email: str) -> User | None:
     return db.query(User).filter(User.email == email).first()
+
+
+def list_fornitori(db: Session) -> list[User]:
+    return db.query(User).filter(User.role == UserRole.FORNITORE).order_by(User.full_name).all()
 
 
 def create_user(db: Session, payload: UserCreate) -> User:

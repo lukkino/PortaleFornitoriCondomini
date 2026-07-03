@@ -29,6 +29,9 @@ class UserCreate(UserBase):
     pec: EmailStr | None = None
     condominio_id: int | None = None
 
+    # Fornitore — obbligatorio solo quando role == fornitore
+    servizio_ids: list[int] | None = None
+
     @field_validator("codice_fiscale")
     @classmethod
     def _validate_codice_fiscale(cls, v: str | None) -> str | None:
@@ -54,6 +57,8 @@ class UserCreate(UserBase):
             ]
             if missing:
                 raise ValueError(f"Campi obbligatori mancanti per il condomino: {', '.join(missing)}")
+        if self.role == UserRole.FORNITORE and not self.servizio_ids:
+            raise ValueError("Seleziona almeno un servizio offerto")
         return self
 
 

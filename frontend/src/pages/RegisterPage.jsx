@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register, getMe } from "../api/auth";
 import { listCondominiPublic } from "../api/condomini";
+import { listServiziPublic } from "../api/servizi";
 import { useAuth } from "../store/authStore";
 import { Eye, EyeOff, Building2 } from "lucide-react";
 
@@ -26,7 +27,12 @@ export default function RegisterPage() {
   const [condominioId, setCondominioId] = useState("");
   const [condomini, setCondomini] = useState([]);
 
+  // Servizi offerti (fornitore)
+  const [serviziOfferti, setServiziOfferti] = useState([]);
+  const [servizi, setServizi] = useState([]);
+
   const isCondomino = role === "condomino";
+  const isFornitore = role === "fornitore";
 
   useEffect(() => {
     if (!isCondomino) return;
@@ -34,6 +40,19 @@ export default function RegisterPage() {
       .then((res) => setCondomini(res.data))
       .catch(() => setCondomini([]));
   }, [isCondomino]);
+
+  useEffect(() => {
+    if (!isFornitore) return;
+    listServiziPublic()
+      .then((res) => setServizi(res.data))
+      .catch(() => setServizi([]));
+  }, [isFornitore]);
+
+  const toggleServizio = (id) => {
+    setServiziOfferti((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,6 +69,9 @@ export default function RegisterPage() {
         payload.condominio_id = condominioId ? Number(condominioId) : null;
       } else {
         payload.full_name = fullName;
+        if (isFornitore) {
+          payload.servizio_ids = serviziOfferti;
+        }
       }
 
       const res = await register(payload);
@@ -141,11 +163,35 @@ export default function RegisterPage() {
               </div>
             </>
           ) : (
-            <div>
-              <label className={labelClass}>Nome e cognome</label>
-              <input type="text" value={fullName} onChange={e => setFullName(e.target.value)}
-                placeholder="Mario Rossi" className={inputClass} />
-            </div>
+            <>
+              <div>
+                <label className={labelClass}>Nome e cognome</label>
+                <input type="text" value={fullName} onChange={e => setFullName(e.target.value)}
+                  placeholder="Mario Rossi" className={inputClass} />
+              </div>
+
+              {isFornitore && (
+                <div>
+                  <label className={labelClass}>Servizi offerti</label>
+                  {servizi.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">Nessun servizio disponibile al momento.</p>
+                  ) : (
+                    <div className="space-y-2 max-h-48 overflow-y-auto rounded-xl border border-input p-3">
+                      {servizi.map((s) => (
+                        <label key={s.id} className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={serviziOfferti.includes(s.id)}
+                            onChange={() => toggleServizio(s.id)}
+                          />
+                          {s.nome}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           <div>

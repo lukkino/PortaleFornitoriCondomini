@@ -22,6 +22,12 @@ services:
         value: "30"
       - key: ALLOWED_ORIGINS
         sync: false          # es. https://<il-tuo-frontend>.onrender.com
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: onboarding@resend.dev   # sostituire con dominio verificato su Resend
+      - key: FRONTEND_URL
+        sync: false          # es. https://<il-tuo-frontend>.onrender.com
     healthCheckPath: /api/health
 
   - type: web

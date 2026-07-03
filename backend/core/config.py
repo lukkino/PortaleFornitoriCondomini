@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     # CORS
     ALLOWED_ORIGINS: str = "*"
 
+    # Email (Resend) — usato per notificare i fornitori di nuove richieste di preventivo
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM: str = "onboarding@resend.dev"  # sostituire con dominio verificato
+    FRONTEND_URL: str = "http://localhost:5173"
+
     def get_allowed_origins(self) -> list[str]:
         if not self.ALLOWED_ORIGINS:
             return ["*"]

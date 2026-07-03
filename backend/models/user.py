@@ -50,6 +50,9 @@ class User(Base):
     condomini_associati = relationship(
         "Condominio", secondary="condominio_condomino", back_populates="condomini"
     )
+    servizi_offerti = relationship(
+        "Servizio", secondary="servizio_fornitore", back_populates="fornitori"
+    )
 
 
 class RefreshToken(Base):
